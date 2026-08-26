@@ -1,0 +1,23 @@
+[project]
+name = "discord-bot-auroralvoid"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "EliteDiamonHawk", email = "235432325+EliteDiamonHawk@users.noreply.github.com" }
+]
+requires-python = ">=3.14"
+dependencies = [
+    "aiohttp>=3.14.3",
+    "aiosqlite>=0.22.1",
+    "discord-py==2.7.1",
+    "python-dotenv>=1.2.3",
+    "requests>=2.34.2",
+]
+
+[project.scripts]
+discord-bot-auroralvoid = "discord_bot_auroralvoid:main"
+
+[build-system]
+requires = ["uv_build>=0.12.6,<0.13.0"]
+build-backend = "uv_build"
