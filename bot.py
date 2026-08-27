@@ -66,6 +66,10 @@ If you want to use prefix commands, make sure to also enable the intent below in
 """
 # intents.message_content = True
 
+# Required for member join events used by the welcome cog. Enable the
+# Server Members Intent for this bot in the Discord Developer Portal as well.
+intents.members = True
+
 # Setup both of the loggers
 
 
@@ -124,6 +128,7 @@ class DiscordBot(commands.Bot):
             command_prefix=commands.when_mentioned_or(os.getenv("PREFIX")),
             intents=intents,
             help_command=None,
+            strip_after_prefix=True,
         )
         """
         This creates custom bot variables so that we can access these variables in cogs more easily.
@@ -193,6 +198,17 @@ class DiscordBot(commands.Bot):
         self.logger.info("-------------------")
         await self.init_db()
         await self.load_cogs()
+        guild_id = int(os.environ["GUILD_ID"])
+        guild = discord.Object(id=guild_id)
+        self.tree.copy_global_to(guild=guild)
+        synced_commands = await self.tree.sync(guild=guild)
+        self.logger.info(
+            f"Synchronized {len(synced_commands)} application command(s) to guild {guild_id}"
+        )
+
+        # Remove legacy global registrations so commands only appear in the configured guild.
+        self.tree.clear_commands(guild=None)
+        await self.tree.sync()
         self.status_task.start()
         self.database = DatabaseManager(
             connection=await aiosqlite.connect(
